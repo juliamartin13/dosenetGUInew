@@ -1,49 +1,144 @@
 # testGUI
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, QGridLayout
+from PyQt5.QtWidgets import QLineEdit, QRadioButton, QCheckBox, QLabel, QComboBox, QMainWindow, QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, QGridLayout, QTabWidget, QAction
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 
-class App(QDialog):
-
+class App(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = 'PyQt5 layout - pythonspot.com'
-        self.left = 10
-        self.top = 10
-        self.width = 320
-        self.height = 100
-        self.initUI()
-        
-    def initUI(self):
+        self.title = 'Dosenet GUI'
+        self.left = 0
+        self.top = 0
+        self.width = 750
+        self.height = 600
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         
-        self.createGridLayout()
+        self.table_widget = MyTableWidget(self)
+        self.setCentralWidget(self.table_widget)
         
-        windowLayout = QVBoxLayout()
-        windowLayout.addWidget(self.horizontalGroupBox)
-        self.setLayout(windowLayout)
-        
-        self.show()
+        self.show()        
+
+class MyTableWidget(QWidget):
     
+    def __init__(self, parent):
+        super(QWidget, self).__init__(parent)
+        self.layout = QGridLayout(self)
+        self.layout.setRowStretch(0,10)
+        self.layout.setRowStretch(1,1)
+               
+        # Initialize tab screen
+        self.tabs = QTabWidget()
+        self.tab1 = QWidget()
+        self.tab2 = QWidget()
+        self.tabs.resize(750,600)
+        
+        # Add tabs
+        self.tabs.addTab(self.tab1,"Configure")
+        self.tabs.addTab(self.tab2,"Data!")
+        
+        # Create first tab
+        self.tab1.layout = QGridLayout(self)
+        self.createGridLayout()
+
+        # column layout!!
+        self.tab1.layout.setColumnStretch(0,1)
+        self.tab1.layout.setColumnStretch(1,1.5)
+        self.tab1.layout.setColumnStretch(2,1)
+        self.tab1.layout.setColumnStretch(3,1.5)
+        self.tab1.layout.setColumnStretch(4,2)
+   
+        # row layout!!  
+        self.tab1.layout.setRowStretch(0,1)
+        self.tab1.layout.setRowStretch(1,3)
+        self.tab1.layout.setRowStretch(2,3)
+        self.tab1.layout.setRowStretch(3,3)
+        self.tab1.layout.setRowStretch(4,3)
+        self.tab1.layout.setRowStretch(5,3)
+        self.tab1.layout.setRowStretch(6,3)
+        self.tab1.layout.setRowStretch(7,1)
+
+        self.pushButton1 = QPushButton("Start")
+        #self.tab1.layout.addWidget(self.pushButton1,2,1)
+        self.tab1.setLayout(self.tab1.layout)
+        #self.tab1.layout.addWidget(QPushButton('1'),2,0)
+        
+        # integration time drop down
+        combo = QComboBox(self)
+        combo.addItem('1')
+        combo.addItem('2')
+        combo.addItem('5')
+        combo.addItem('10')
+        self.tab1.layout.addWidget(combo, 1,2)
+        
+        # integration time label
+        label = QLabel("Integration Time (sec):",self)
+        self.tab1.layout.addWidget(label,1,1)        
+
+        # select sensor label
+        sensorLabel = QLabel("Select Sensors", self)
+        self.tab1.layout.addWidget(sensorLabel, 1,4)
+
+        # radiation sensor
+        RADsensor = QCheckBox('Radiation', self)
+        self.tab1.layout.addWidget(RADsensor, 2,4)
+
+        # air quality sensor
+        AQsensor = QCheckBox('Air Quality', self)
+        self.tab1.layout.addWidget(AQsensor, 3,4)
+ 
+        # carbon dioxide sensor
+        CO2sensor = QCheckBox('CO2', self)
+        self.tab1.layout.addWidget(CO2sensor, 4,4)
+                
+        # data points label
+        datapointsLabel = QLabel("Data Points to Display:", self)
+        self.tab1.layout.addWidget(datapointsLabel, 2,1)
+
+        # data points drop down
+        selectDatapoints = QComboBox(self)
+        selectDatapoints.addItem('10')
+        selectDatapoints.addItem('25')
+        selectDatapoints.addItem('50')
+        self.tab1.layout.addWidget(selectDatapoints, 2,2)
+
+        # save data checkbox
+        saveData = QCheckBox('Save Data', self)
+        self.tab1.layout.addWidget(saveData, 3,1)
+
+        # radio button group Inside / Outside
+        location1 = QRadioButton('Inside', self)
+        self.tab1.layout.addWidget(location1, 4,1)
+
+        location2 = QRadioButton('Outside', self)
+        self.tab1.layout.addWidget(location2, 4,2)
+
+        # name data label
+        dataName = QLabel("Name:", self)
+        self.tab1.layout.addWidget(dataName, 5,1)
+
+        # name data textbox
+        dataTextbox = QLineEdit(self)
+        self.tab1.layout.addWidget(dataTextbox, 5,2)
+
+        # Add tabs to widget
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+     
     def createGridLayout(self):
         self.horizontalGroupBox = QGroupBox("Grid")
         layout = QGridLayout()
-        layout.setColumnStretch(1, 4)
-        layout.setColumnStretch(2, 4)
-        
-        layout.addWidget(QPushButton('1'),0,0)
-        layout.addWidget(QPushButton('2'),0,1)
-        layout.addWidget(QPushButton('3'),0,2)
-        layout.addWidget(QPushButton('4'),1,0)
-        layout.addWidget(QPushButton('5'),1,1)
-        layout.addWidget(QPushButton('6'),1,2)
-        layout.addWidget(QPushButton('7'),2,0)
-        layout.addWidget(QPushButton('8'),2,1)
-        layout.addWidget(QPushButton('9'),2,2)
-        
+        layout.setColumnStretch(1, 6)
+        layout.setColumnStretch(2, 6)
+                        
         self.horizontalGroupBox.setLayout(layout)
+
+    @pyqtSlot()
+    def on_click(self):
+        print("\n")
+        for currentQTableWidgetItem in self.tableWidget.selectedItems():
+            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
