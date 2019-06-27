@@ -1,8 +1,8 @@
 # testGUI
 import sys
-from PyQt5.QtWidgets import QLineEdit, QRadioButton, QCheckBox, QLabel, QComboBox, QMainWindow, QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, QGridLayout, QTabWidget, QAction
+from PyQt5.QtWidgets import QStyleFactory, QFrame, QSplitter, QDialogButtonBox, QSpinBox, QFormLayout, QLineEdit, QRadioButton, QCheckBox, QLabel, QComboBox, QMainWindow, QApplication, QWidget, QPushButton, QHBoxLayout, QGroupBox, QDialog, QVBoxLayout, QGridLayout, QTabWidget, QAction
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 
 class App(QMainWindow):
     def __init__(self):
@@ -14,25 +14,24 @@ class App(QMainWindow):
         self.height = 600
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        
+ 
+       
         self.table_widget = MyTableWidget(self)
         self.setCentralWidget(self.table_widget)
         
-        self.show()        
+        self.show()                
 
 class MyTableWidget(QWidget):
-    
+        
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
         self.layout = QGridLayout(self)
-        self.layout.setRowStretch(0,10)
-        self.layout.setRowStretch(1,1)
                
         # Initialize tab screen
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
-        self.tabs.resize(750,600)
+        self.tabs.resize(700,600)
         
         # Add tabs
         self.tabs.addTab(self.tab1,"Configure")
@@ -40,7 +39,17 @@ class MyTableWidget(QWidget):
         
         # Create first tab
         self.tab1.layout = QGridLayout(self)
-        self.createGridLayout()
+        
+        # start button
+        self.layout.addWidget(QPushButton('START'), 2,1,1,1)
+
+        # stop button
+        self.layout.addWidget(QPushButton('STOP'),2,2,1,1)
+
+        # clear button
+        self.layout.addWidget(QPushButton('CLEAR'),2,3,1,1)
+
+        self.layout.addWidget(self.tabs, 1,1,1,3)        
 
         # column layout!!
         self.tab1.layout.setColumnStretch(0,1)
@@ -59,10 +68,7 @@ class MyTableWidget(QWidget):
         self.tab1.layout.setRowStretch(6,3)
         self.tab1.layout.setRowStretch(7,1)
 
-        self.pushButton1 = QPushButton("Start")
-        #self.tab1.layout.addWidget(self.pushButton1,2,1)
         self.tab1.setLayout(self.tab1.layout)
-        #self.tab1.layout.addWidget(QPushButton('1'),2,0)
         
         # integration time drop down
         combo = QComboBox(self)
@@ -106,34 +112,43 @@ class MyTableWidget(QWidget):
         # save data checkbox
         saveData = QCheckBox('Save Data', self)
         self.tab1.layout.addWidget(saveData, 3,1)
-
+        saveData.stateChanged.connect(self.showSaveData)
+       
         # radio button group Inside / Outside
-        location1 = QRadioButton('Inside', self)
-        self.tab1.layout.addWidget(location1, 4,1)
+        self.location1 = QRadioButton('Inside', self)
+        self.tab1.layout.addWidget(self.location1, 4,1)
+        self.location1.hide()
 
-        location2 = QRadioButton('Outside', self)
-        self.tab1.layout.addWidget(location2, 4,2)
+        self.location2 = QRadioButton('Outside', self)
+        self.tab1.layout.addWidget(self.location2, 4,2)
+        self.location2.hide()
 
         # name data label
-        dataName = QLabel("Name:", self)
-        self.tab1.layout.addWidget(dataName, 5,1)
+        self.dataName = QLabel("Name:", self)
+        self.tab1.layout.addWidget(self.dataName, 5,1)
+        self.dataName.hide()
 
         # name data textbox
-        dataTextbox = QLineEdit(self)
-        self.tab1.layout.addWidget(dataTextbox, 5,2)
+        self.dataTextbox = QLineEdit(self)
+        self.tab1.layout.addWidget(self.dataTextbox, 5,2)
+        self.dataTextbox.hide()
 
         # Add tabs to widget
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
-     
-    def createGridLayout(self):
-        self.horizontalGroupBox = QGroupBox("Grid")
-        layout = QGridLayout()
-        layout.setColumnStretch(1, 6)
-        layout.setColumnStretch(2, 6)
-                        
-        self.horizontalGroupBox.setLayout(layout)
+        #self.layout.addWidget(self.tabs)
+        #self.setLayout(self.layout)
 
+    def showSaveData(self, state):
+        if state == Qt.Checked:
+            self.location1.show()
+            self.location2.show()
+            self.dataName.show() 
+            self.dataTextbox.show()
+        elif state == Qt.Unchecked: #hides widgets
+            self.location1.hide()
+            self.location2.hide()
+            self.dataName.hide()
+            self.dataTextbox.hide()
+   
     @pyqtSlot()
     def on_click(self):
         print("\n")
